@@ -1,6 +1,6 @@
 import numpy as np
 from datasets import Dataset
-from utils import print_gpu_utilization, print_summary
+from profile_utils import print_gpu_utilization, print_summary
 import torch
 
 seq_len, dataset_size = 512, 512
@@ -11,8 +11,10 @@ dummy_data = {
 ds = Dataset.from_dict(dummy_data)
 ds.set_format("pt")
 
-print("Init: ", print_gpu_utilization())
+print("Init: ")
+print_gpu_utilization()
 
 torch.ones((1,1)).cuda()
-print("Kernels init:", print_gpu_utilization())
+print("Kernels init:")
+print_gpu_utilization()
 
