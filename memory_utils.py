@@ -7,4 +7,5 @@ def get_activation_memory(model_config: AutoConfig, num_bytes: int =4, batch_siz
     h = model_config.hidden_size
     a = model_config.num_attention_heads
     s = sequence_length
-    return L*((16*N+2)*s*b*h + (2*N+1)*a*s*s*b)
+    activation_mem = L*((16*N+2)*s*b*h + (2*N+1)*a*s*s*b)
+    return activation_mem//(1024**2)
