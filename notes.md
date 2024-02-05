@@ -22,3 +22,7 @@ To understand this, first, we need to go back to floating point arithmetic. With
 Thus, to preserve the lower order bits, you need a summation method that will keep track of the lost lower order bits. One classic example is Kahan summation. (A modified version of this is used in Python's `sum()` method!)
 
 So, for weight updates as well, in a pure BF16 setting, you can have the same issue with loss of precision after a number of training steps. Thus, you need a special summation method like Kahan summation to keep track of the error and add it back later. (this would still be approximate, of course) 
+
+## More on Half-precision
+
+When you have MMA ops, the multiplication typically happens block wise -. This means that at each step a thread will coompute a partial sum of the full dot product you need for an entry in the output matrix. WIth BF16/ FP16, this multiplication happens in the half-precision format, but the accumulation is in FP32. For example, you might multiply a (2x4) and a (4x2) matrix, which happens in BF16, but the result gets added to a (2x2) FP32 matrix.
