@@ -3,6 +3,7 @@ These are some notes I've taken while trying to get into the finer details of me
 
 # Kernels memory 
 I've been trying to udnerstand how much memory gpu kernels take up. In  HF's blog, they mention that this init can be 1-2GB. I've noticed about 300MB of utilization from their code on RTX 3090 (workstation) and Tesla V100 (Colab). For an A100 this was about 500MB on Colab. 
+`CUDA_MODULE_LOADING=EAGER` forces pytorch to load all the cuda kernels at the start. Typically torch will lazily load this. 
 
 # Model memory
 Is there a difference in memory for model weights across different GPUs (like a mysterious overhead)? I think not. Between V100 and A100, I saw no difference (barring a few MBs) for a BERT model. 
@@ -26,3 +27,4 @@ So, for weight updates as well, in a pure BF16 setting, you can have the same is
 ## More on Half-precision
 
 When you have MMA ops, the multiplication typically happens block wise -. This means that at each step a thread will coompute a partial sum of the full dot product you need for an entry in the output matrix. WIth BF16/ FP16, this multiplication happens in the half-precision format, but the accumulation is in FP32. For example, you might multiply a (2x4) and a (4x2) matrix, which happens in BF16, but the result gets added to a (2x2) FP32 matrix.
+
