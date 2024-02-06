@@ -30,3 +30,5 @@ When you have MMA ops, the multiplication typically happens block wise -. This m
 
 ## Mixed precision in practice
 In practice, with `torch.autocast` and DeepSpeed, the full fp32 gradients are materialized. Consider what the mixed precision paper mentions -  weights, activations and gradients are in half-precision, and during the optimizer step, the gradients are converted to FP32. However, not materializing the full FP32 gradients and converting them on the fly would need to be an implementation in the optimizer. This is not possible with the usual torch optim APIs. Thus, at runtime, the full FP32 gradients would be stored in HBM. 
+
+After you finish training, gradients are cleared, so these 4 bytes would contribute to the temporary memory allocated for the program.
