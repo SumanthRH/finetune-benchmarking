@@ -28,3 +28,5 @@ So, for weight updates as well, in a pure BF16 setting, you can have the same is
 
 When you have MMA ops, the multiplication typically happens block wise -. This means that at each step a thread will coompute a partial sum of the full dot product you need for an entry in the output matrix. WIth BF16/ FP16, this multiplication happens in the half-precision format, but the accumulation is in FP32. For example, you might multiply a (2x4) and a (4x2) matrix, which happens in BF16, but the result gets added to a (2x2) FP32 matrix.
 
+## Mixed precision in practice
+In practice, with `torch.autocast` and DeepSpeed, the full fp32 gradients are materialized. Consider what the mixed precision paper mentions -  weights, activations and gradients are in half-precision, and during the optimizer step, the gradients are converted to FP32. However, not materializing the full FP32 gradients and converting them on the fly would need to be an implementation in the optimizer. This is not possible with the usual torch optim APIs. Thus, at runtime, the full FP32 gradients would be stored in HBM. 
