@@ -32,3 +32,15 @@ When you have MMA ops, the multiplication typically happens block wise -. This m
 In practice, with `torch.autocast` and DeepSpeed, the full fp32 gradients are materialized. Consider what the mixed precision paper mentions -  weights, activations and gradients are in half-precision, and during the optimizer step, the gradients are converted to FP32. However, not materializing the full FP32 gradients and converting them on the fly would need to be an implementation in the optimizer. This is not possible with the usual torch optim APIs. Thus, at runtime, the full FP32 gradients would be stored in HBM. 
 
 After you finish training, gradients are cleared, so these 4 bytes would contribute to the temporary memory allocated for the program.
+
+# Overhead
+The gpu performance equation has a latency term: 
+T = T_mem + T_math + latency
+
+This latency or overhead is the time spend doing everything else apart from fetching memory or doing compute. This can be time spent in the Python interpreter, time spent in Pytorch, etc. Pytorch executes cuda code asynchronously to overlap overhead with computations. This means that while the GPU is executing CUDA code, pytorch's dispatcher can dispatch the next set of cuda kernels to be executed. 
+
+# Profiling
+
+You can use pytorch's native profiler to profile GPU utlization. Note that GPU ulitization - the percentage of SMs/cores you're keeping active - is different from the "volatile GPU utilization" that you see on nvidia-smi. "volatile gpu utilization" is the percentage of time a CUDA kernel is active - this means that you can get 100% utlization even if you're just using 1 core. 
+
+You can also use nsys to profile https://dev-discuss.pytorch.org/t/using-nsight-systems-to-profile-gpu-workload/59 
