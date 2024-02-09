@@ -8,7 +8,7 @@ def get_activation_memory(model_config: AutoConfig, num_bytes: int =4, batch_siz
     a = model_config.num_attention_heads
     s = sequence_length
     if grad_checkpointing:
-        activation_mem = (16*N+2)*s*b*h + (2*N+1)*a*s*s*b + N*s*b*h # add temp memory + checkpointed mem
+        activation_mem = (16*N+2)*s*b*h + (2*N+1)*a*s*s*b + L*N*s*b*h # add temp memory + checkpointed mem
     else:
         activation_mem = L*((16*N+2)*s*b*h + (2*N+1)*a*s*s*b)
     return activation_mem//(1024**2)
