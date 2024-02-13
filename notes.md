@@ -44,3 +44,25 @@ This latency or overhead is the time spend doing everything else apart from fetc
 You can use pytorch's native profiler to profile GPU utlization. Note that GPU ulitization - the percentage of SMs/cores you're keeping active - is different from the "volatile GPU utilization" that you see on nvidia-smi. "volatile gpu utilization" is the percentage of time a CUDA kernel is active - this means that you can get 100% utlization even if you're just using 1 core. 
 
 You can also use nsys to profile https://dev-discuss.pytorch.org/t/using-nsight-systems-to-profile-gpu-workload/59 
+
+# Baseline
+
+WIth simple FP32 training with 4 batch size, 512 sequence length for BERT-Large:
+```
+{'train_runtime': 43.3639, 'train_samples_per_second': 11.807, 'train_steps_per_second': 2.952, 'train_loss': 0.009557262994349003, 'epoch': 1.0}       
+Time: 43.36                                                                                                              
+Samples/second: 11.81                                                                       
+GPU memory occupied: 11844 MB.
+```
+
+# Gradient Accumulation
+4 gradient accumulation steps. 
+
+```
+{'train_runtime': 56.0154, 'train_samples_per_second': 9.14, 'train_steps_per_second': 2.285, 'train_loss': 0.011208745650947094, 'epoch': 1.0}
+Time: 56.02
+Samples/second: 9.14
+GPU memory occupied: 8330 MB.
+```
+
+# 
