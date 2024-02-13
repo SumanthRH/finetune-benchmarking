@@ -77,3 +77,7 @@ Each tensor core perform operations on small matrices with size 4x4. Each tensor
 It is called mixed precision because input matrices are fp16 but multiplication result and accumulator are fp32 matrices.
 
 Probably, the proper name would be just 4x4 matrix cores however NVIDIA marketing team decided to use "tensor cores".
+
+# Fused Adam?
+
+The Adam optimizer in Pytorch (like all Pytorch optimizers) carries out optimizer.step() by looping over parameters, and launching a series of kernels for each parameter. This can require hundreds of small launches that are mostly bound by CPU-side Python looping and kernel launch overhead, resulting in poor device utilization. Currently, the FusedAdam implementation in Apex flattens the parameters for the optimization step, then carries out the optimization step itself via a fused kernel that combines all the Adam operations. In this way, the loop over parameters as well as the internal series of Adam operations for each parameter are fused such that optimizer.step() requires only a few kernel launches.
