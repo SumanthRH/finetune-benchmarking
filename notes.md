@@ -65,4 +65,15 @@ Samples/second: 9.14
 GPU memory occupied: 8330 MB.
 ```
 
-# 
+
+# Tensor Cores?
+
+Helpful answer from stack overflow on tensor cores:
+
+GPUs have 5120 cuda cores where each core can perform up to 1 single precision multiply-accumulate operation (e.g. in fp32: x += y * z) per 1 GPU clock (e.g. Tesla V100 PCIe frequency is 1.38Gz).
+
+Each tensor core perform operations on small matrices with size 4x4. Each tensor core can perform 1 matrix multiply-accumulate operation per 1 GPU clock. It multiplies two fp16 matrices 4x4 and adds the multiplication product fp32 matrix (size: 4x4) to accumulator (that is also fp32 4x4 matrix).
+
+It is called mixed precision because input matrices are fp16 but multiplication result and accumulator are fp32 matrices.
+
+Probably, the proper name would be just 4x4 matrix cores however NVIDIA marketing team decided to use "tensor cores".
