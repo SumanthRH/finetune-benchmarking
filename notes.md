@@ -56,7 +56,7 @@ GPU memory occupied: 11844 MB.
 ```
 
 # Gradient Accumulation
-4 gradient accumulation steps. 
+4 gradient accumulation steps. There doesn't seem to be any formula to quantify the training time increse wrt number of gradient accumulation steps. 
 
 ```
 {'train_runtime': 56.0154, 'train_samples_per_second': 9.14, 'train_steps_per_second': 2.285, 'train_loss': 0.011208745650947094, 'epoch': 1.0}
@@ -65,20 +65,12 @@ Samples/second: 9.14
 GPU memory occupied: 8330 MB.
 ```
 
+# Gradient checkpointing
+Full activation recomputation.
 
-# Tensor Cores?
-
-Helpful answer from stack overflow on tensor cores:
-
-GPUs have 5120 cuda cores where each core can perform up to 1 single precision multiply-accumulate operation (e.g. in fp32: x += y * z) per 1 GPU clock (e.g. Tesla V100 PCIe frequency is 1.38Gz).
-
-Each tensor core perform operations on small matrices with size 4x4. Each tensor core can perform 1 matrix multiply-accumulate operation per 1 GPU clock. It multiplies two fp16 matrices 4x4 and adds the multiplication product fp32 matrix (size: 4x4) to accumulator (that is also fp32 4x4 matrix).
-
-It is called mixed precision because input matrices are fp16 but multiplication result and accumulator are fp32 matrices.
-
-Probably, the proper name would be just 4x4 matrix cores however NVIDIA marketing team decided to use "tensor cores".
-
-# Fused Adam?
-https://discuss.pytorch.org/t/fusedadam-optimizer-in-nvidia-amp-package/47544
-
-> The Adam optimizer in Pytorch (like all Pytorch optimizers) carries out optimizer.step() by looping over parameters, and launching a series of kernels for each parameter. This can require hundreds of small launches that are mostly bound by CPU-side Python looping and kernel launch overhead, resulting in poor device utilization. Currently, the FusedAdam implementation in Apex flattens the parameters for the optimization step, then carries out the optimization step itself via a fused kernel that combines all the Adam operations. In this way, the loop over parameters as well as the internal series of Adam operations for each parameter are fused such that optimizer.step() requires only a few kernel launches.
+```
+{'train_runtime': 57.0162, 'train_samples_per_second': 8.98, 'train_steps_per_second': 2.245, 'train_loss': 0.07469740509986877, 'epoch': 1.0}
+Time: 57.02
+Samples/second: 8.98
+GPU memory occupied: 7066 MB.
+```
